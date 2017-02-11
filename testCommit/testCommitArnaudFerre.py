@@ -13,6 +13,9 @@ Licence: DSSL
 
 # Importations
 import math
+# Autres syntaxes/utilisations possibles :
+# from math import sqrt
+# import math as mat 
 
 
 # Function definition
