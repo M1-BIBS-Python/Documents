@@ -6,7 +6,7 @@ Author: Arnaud Ferré
 Contact: arnaud.ferre@u-psud.fr
 Date: 09/02/2017
 Description: 
-- A clean example of a Python script architecture
+- A clean example of a Python script architecture for functions definition
 - Used to test commit command
 Licence: DSSL
 """
@@ -30,11 +30,10 @@ def hypotenuse(a, b):
     return result
 
 
-# Is executed only if it is this script which is executed by the interpretor 
-# (not if it is contained in an imported file) 
-# Useful to do unit test in every script!
+# Test/Demo of the local functions:
 if __name__ == '__main__':
     
-    print(hypotenuse(1,1))
-
+    print("hyp(1,1)="+str(hypotenuse(1,1)))
+	print("hyp(2,2)="+str(hypotenuse(2,2)))
+	print("hyp(1,2)="+str(hypotenuse(1,2)))
 	
