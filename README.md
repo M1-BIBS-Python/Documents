@@ -11,4 +11,5 @@ PS : Si vous rencontrez des problèmes à pusher votre code, essayez de repartir
 - Supprimez tout ce qui se trouvait dans le répertoire Git  
 - Recommencez les démarches expliquées dans le sujet (sans oublier au début de commencer par un : git init).
 - Ajoutez à nouveau votre fichier dans votre projet local et retentez à nouveau un push
+
 Normalement, on ne fait pas une vingtaine de push simultanés en pratique, et un "git pull" réussit très bien à mettre à jour votre version... Donc ça devrait fonctionner pour la suite !
