@@ -1,0 +1,39 @@
+COLUMNS        DATA  TYPE    FIELD        DEFINITION
+-------------------------------------------------------------------------------------
+ 1 -  6        Record name   "ATOM  "
+ 7 - 11        Integer       serial       Atom  serial number.
+13 - 16        Atom          name         Atom name.
+17             Character     altLoc       Alternate location indicator.
+18 - 20        Residue name  resName      Residue name.
+22             Character     chainID      Chain identifier.
+23 - 26        Integer       resSeq       Residue sequence number.
+27             AChar         iCode        Code for insertion of residues.
+31 - 38        Real(8.3)     x            Orthogonal coordinates for X in Angstroms.
+39 - 46        Real(8.3)     y            Orthogonal coordinates for Y in Angstroms.
+47 - 54        Real(8.3)     z            Orthogonal coordinates for Z in Angstroms.
+
+
+Votre structure finale doit ressembler à ça :
+{
+'chains': ['A'],
+'A': 
+	{
+	'reslist': ['-3'], 
+	'-3': 
+		{
+		'resname': 'ARG', 
+		'atomlist': ['N', 'N', 'CA', 'CA', 'C', 'C', 'O', 'O', 'CB', 'CB', 'CG', 'CG', 'CD', 'CD', 'NE', 'NE', 'CZ', 'CZ', 'NH1', 'NH1', 'NH2']
+		'C': {'y': 86.53, 'x': 12.759, 'z': 96.365, 'id': '37'}, 
+		'CB': {'y': 85.746, 'x': 13.428, 'z': 93.98, 'id': '41'}, 
+		'CA': {'y': 85.862, 'x': 12.333, 'z': 95.041, 'id': '35'}, 
+		'CG': {'y': 85.172, 'x': 12.866, 'z': 92.651, 'id': '43'}, 
+		'NE': {'y': 85.487, 'x': 12.644, 'z': 90.195, 'id': '47'}, 
+		'O': {'y': 87.757, 'x': 12.924, 'z': 96.42, 'id': '39'}, 
+		'N': {'y': 86.721, 'x': 11.296, 'z': 94.521, 'id': '33'}, 
+		'CZ': {'y': 85.582, 'x': 13.114, 'z': 88.947, 'id': '49'}, 
+		'CD': {'y': 85.886, 'x': 13.374, 'z': 91.406, 'id': '45'}, 
+		'NH1': {'y': 86.056, 'x': 14.338, 'z': 88.706, 'id': '51'}, 
+		'NH2': {'y': 84.308, 'x': 14.421, 'z': 88.373, 'id': '52'}, 
+		}
+	}
+}
