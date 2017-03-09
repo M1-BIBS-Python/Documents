@@ -18,7 +18,7 @@ import math
 # import math as mat 
 
 # Internal importations:
-from testCommitArnaudFerre_fonctions.py import *
+from structureTools_ArnaudFerre.py import *
 
 
 
