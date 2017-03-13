@@ -9,10 +9,12 @@ Description:
 - A function parsing a PDB file into a dictionary
 """
 
+from math import sqrt
+import string
+import re
+
 def ParsingPDB (pdbFile):
-	
-	print("Ce programme vous permet de transformer un fichier .pdb au format ATOM en un dictionnaire manipulable par Python.")
-	
+		
 	infile = open(pdbFile, "r")
 	lines = infile.readlines() 						# cree une liste dont chaque element est une ligne du fichier
 
@@ -20,50 +22,93 @@ def ParsingPDB (pdbFile):
 	chainList = []
 	rList = []
 	
+	cptAlt = False
 
 	for line in lines:
 		if line[:4:] == 'ATOM':						# si la ligne commence par 'ATOM'
 			
-			chaine = line[21]
-			if chaine not in chainList:
-				chainList.append(chaine)
-				molecule[chaine] = {}
-				resList=[]
+			if cptAlt == False:
+				alt = line[17]
+				cptAlt = True
+				
+			if line[17] == alt:
+				chaine = line[21]
+				
+				if chaine not in chainList:
+					chainList.append(chaine)
+					molecule[chaine] = {}
+					resList=[]
+				
+				curres = line[22:26].strip()
 			
-			res = line[23:26]
-			if res not in resList :
-				resList.append(res)
-				molecule[chaine][res] = {}
-				atomList=[]
-				rList=[]
+				if curres not in resList :
+					resList.append(curres)
+					molecule[chaine][curres] = {}
+					atomList=[]
+					rList=[]
 				
-			atom = line[13:16]
-			if atom not in atomList:
-				atomList.append(atom)
-				molecule[chaine][res][atom] = {}
+				atom = line[13:16].strip()
+				if atom not in atomList:
+					atomList.append(atom)
+					molecule[chaine][curres][atom] = {}
 				
-			if line[17:20] not in rList:
-				rList.append(line[17:20])
+				if line[17:20] not in rList:
+					rList.append(line[17:20].strip())
 				
 					
-			molecule[chaine][res][atom]['x'] = line[31:38]
-			molecule[chaine][res][atom]['y'] = line[39:46]
-			molecule[chaine][res][atom]['z'] = line[47:54]
-			molecule[chaine][res][atom]['id'] = line[7:11]
+				molecule[chaine][curres][atom]['x'] = float(line[30:38])
+				molecule[chaine][curres][atom]['y'] = float(line[38:46])
+				molecule[chaine][curres][atom]['z'] = float(line[46:54])
+				molecule[chaine][curres][atom]['id'] = line[6:11].strip()
 			
-			molecule[chaine][res]['resname'] = rList
-			molecule[chaine]['reslist'] = resList
-			molecule[chaine][res]['atomlist'] = atomList
+				molecule[chaine][curres]['resname'] = rList
+				molecule[chaine]['reslist'] = resList
+				molecule[chaine][curres]['atomlist'] = atomList
 			
 	infile.close()
 	return(molecule)
 	
-print(ParsingPDB("1EJH.pdb"))
+
+def ContactResidus(dico):
+	
+	atomicMass = dict()
+	atomicMass = {"C": float(12.0107), "N": float(14.0067), 
+				  "O": float(15.9994), "S": float(32.065),
+				  "OH": float(17.0073), "NH": float(15.0146)}
+	
+	x = 0
+	y = 0
+	z = 0
+	massTot = 0
+	CM = {}
+	
+	for chain in dico.keys():
+		for res in dico[chain].keys():
+			if res != 'reslist':
+				for atom in dico[chain][res].keys():
+					alpha = dico[chain][res]['CA']
+					if atom != 'resname' and atom != 'atomlist':
+						for key in atomicMass.keys():
+							if re.match(key, atom):
+								mass = atomicMass[key]
+						x += mass*dico[chain][res][atom]['x']
+						y += mass*dico[chain][res][atom]['y']
+						z += mass*dico[chain][res][atom]['z']
+						massTot += mass
+
+	CM['x'] = x/massTot
+	CM['y'] = y/massTot
+	CM['z'] = z/massTot
+	return CM
 
 
 			
 
 
+if __name__ == '__main__':
+	dico = ParsingPDB("../Data/arginine.pdb")
+	print ContactResidus(dico)
+	
 
 	
 			
