@@ -76,6 +76,7 @@ def ContactResidus(dico):
 				  "O": float(15.9994), "S": float(32.065),
 				  "OH": float(17.0073), "NH": float(15.0146)}
 	
+	# calcul du centre de masse:
 	x = 0
 	y = 0
 	z = 0
@@ -86,7 +87,6 @@ def ContactResidus(dico):
 		for res in dico[chain].keys():
 			if res != 'reslist':
 				for atom in dico[chain][res].keys():
-					alpha = dico[chain][res]['CA']
 					if atom != 'resname' and atom != 'atomlist':
 						for key in atomicMass.keys():
 							if re.match(key, atom):
@@ -99,6 +99,7 @@ def ContactResidus(dico):
 	CM['x'] = x/massTot
 	CM['y'] = y/massTot
 	CM['z'] = z/massTot
+	
 	return CM
 
 
