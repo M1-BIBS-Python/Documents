@@ -4,17 +4,7 @@
 #lecture d'un fichier pdb
 
 #myfile= open("arginine.pdb" , "r")
-
-
-
-
-
-
-
-
-
-
-
+import pylab
 
 def parser(FILE): 
 	myfile= open(FILE, "r")
@@ -37,7 +27,7 @@ def parser(FILE):
 				dddd_proteine[chain][resids]["atomlist"]=[]
 				resname=line[17:19]
 				dddd_proteine[chain][resids]["resname"]=resname
-			if line[16]==location_indicateur:
+			if line[17]==location_indicateur:
 				atome=line[13:16]
 				dddd_proteine[chain][resids]["atomlist"].append(atome.strip())
 				dddd_proteine[chain][resids][atome]={}
@@ -45,12 +35,33 @@ def parser(FILE):
 				dddd_proteine[chain][resids][atome]["y"]=line[39:46]
 				dddd_proteine[chain][resids][atome]["z"]=line[47:54]
 				dddd_proteine[chain][resids][atome]["id"]=line[9:11]
-	print dddd_proteine
+	#print dddd_proteine
 	return dddd_proteine
 
 
+def dist(**d_prot):
+	res=len(d_prot["A"]["reslist"])
+	print res
+	distance=[]
+	for i in range(res):
+		for j in range(res):
+			a=int(d_prot["A"]["reslist"][j])
+			b=int(d_prot["A"]["reslist"][i])
+			distance.append(abs(a- b))
+	return distance
 
-
+def graph(*resultat):
+	a=0
+	while a<= len(resultat):
+		for i in range(180):
+			if resultat[a]<=20:
+				print "1",
+			elif resultat[a]<=20:
+				print "2",
+			else :
+				print "3",
+			a=a+1
+		print "\n"
 
 	
 
@@ -59,9 +70,13 @@ def parser(FILE):
 if __name__ == "__main__":
 
 
-
-	#parser("/home/tp-home001/mchaput/Documents/python/test2.pdb" )
-	parser("/home/tp-home001/mchaput/Documents/python/arginine.pdb" )
+	d_dico= dict()
+	d_dico=parser("../Data/1EJH.pdb" )
+	#d_dico=parser("../Data/arginine.pdb")
+	#print d_dico
+	tab=[]
+	tab=dist(**d_dico)
+	#graph(*tab)
 	#print dddd_proteine
 
 
