@@ -4,8 +4,8 @@
 # date: 06/03/2017
 
 import os                      # gestion de fichiers et de dossiers
-import sys                     # gestion des erreurs et des arguments
-import math
+import sys 
+import math                    # gestion des erreurs et des arguments
 
 def parser_pdb():
 
@@ -18,7 +18,6 @@ def parser_pdb():
     # Le nom du fichier est passe en argument
     if len(sys.argv) != 2:
         sys.exit("ERREUR : il faut exactement un argument.")
-
 
     # Test d'ouverture du fichier
     try:
@@ -47,27 +46,27 @@ def parser_pdb():
         # Pour toutes les lignes qui commencent par ATOM (celles qui ont des atomes)
         if (lignes[i][0:4] == "ATOM"):
 
-			compteur+=1
+            compteur+=1
 
-			nom_aa=lignes[i][21:22]
-			if dict.has_key(nom_aa)==False:
-				dict[nom_aa] = {}
+            nom_aa=lignes[i][21:22]
+            if dict.has_key(nom_aa)==False:
+                dict[nom_aa] = {}
 
-        # On enregistre la position de l'atome
-			position=lignes[i][23:26]
-			if dict[nom_aa].has_key(position)==False:
-				dict[nom_aa][position] = {}
+                # On enregistre la position de l'atome
+            position=lignes[i][23:26]
+            if dict[nom_aa].has_key(position)==False:
+                dict[nom_aa][position] = {}
 
-        # On enregistre le nom de l'atome
-			nom_atome=lignes[i][13:16]
-			if dict[nom_aa][position].has_key(nom_atome)==False:
-            # On cree un dictionnaire avec toutes les informations qui nous interessent sur l'atome
-				dict[nom_aa][position][nom_atome] = {}
+                # On enregistre le nom de l'atome
+            nom_atome=lignes[i][13:16]
+            if dict[nom_aa][position].has_key(nom_atome)==False:
+                # On cree un dictionnaire avec toutes les informations qui nous interessent sur l'atome
+                dict[nom_aa][position][nom_atome] = {}
 
-				dict[nom_aa][position][nom_atome]['position'] = lignes[i][9:13]
-				dict[nom_aa][position][nom_atome]['x'] = lignes[i][31:38]
-				dict[nom_aa][position][nom_atome]['y'] = lignes[i][40:48]
-				dict[nom_aa][position][nom_atome]['z'] = lignes[i][48:56]
+                dict[nom_aa][position][nom_atome]['position'] = lignes[i][9:13]
+                dict[nom_aa][position][nom_atome]['x'] = lignes[i][31:38]
+                dict[nom_aa][position][nom_atome]['y'] = lignes[i][40:48]
+                dict[nom_aa][position][nom_atome]['z'] = lignes[i][48:56]
 
     # Test presence d'ATOM
     if compteur==0:
@@ -80,13 +79,11 @@ def parser_pdb():
     print compteur,
 
     # Affichage
-    #for i in dict.keys():
-        #print dict[i]
+    for i in dict.keys():
+        print dict[i]
 
     return dict
 
-
-parser_pdb()
 
 
 
