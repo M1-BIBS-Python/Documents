@@ -25,10 +25,10 @@ def lirePDB(a):
 				nomAtome = l[13:16].strip()
 				chName=l[20:23].strip()
 				
-				info={'ID': l[9:12].strip(),
-						'x'	: l[32:39].strip(),
-						'y' : l[40:47].strip(),
-						'z' : l[48:55].strip()
+				info={'ID': (float)(l[9:12].strip()),
+						'x'	: (float)(l[32:39].strip()),
+						'y' : (float)(l[40:47].strip()),
+						'z' : (float)(l[48:55].strip())
 					}
 				######## Fin recuperation ########
 				
@@ -45,6 +45,36 @@ def lirePDB(a):
 	return chaine
 
 
-print lirePDB(sys.argv[1])
+def centreMasse(b):
+	
+	for i in b.keys():# On parcours la chaine
+		for j in b[i].keys():
+			
+			cdm = {'x':0,'y':0,'z':0}
+			c=0
+			for k in b[i][j].keys():
+				
+				cdm['x']+=b[i][j][k]['x']
+				cdm['y']+=b[i][j][k]['y']
+				cdm['z']+=b[i][j][k]['z']
+				c+=1
+				
+			cdm['x']/=c
+			cdm['y']/=c
+			cdm['z']/=c
+			
+			b[i][j]["cdm"]=cdm
+			
+	return b
+	
+	
+def dessiner(c):
+	
+	
+	
 
+if __name__ == '__main__':
+	monDico = dict()
+	monDico = lirePDB(sys.argv[1])
+	centreMasse(monDico);
 
