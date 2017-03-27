@@ -50,11 +50,10 @@ def parserPDB(infile):
 
 #Autres fonctions
 
-def CarteContact(dico):
+def CalculeDistance(dico):
 	
 	distance=[]
 	for nchaine in dico["nchaine"]:
-		if nchaine="A":
 			for position1 in dico[nchaine]["position"]:
 				for position2 in dico[nchaine]["position"]:
 					if position1 != position2:
@@ -70,7 +69,9 @@ def CarteContact(dico):
 								distance.append(d)
 	return distance
 	
-	
+def Interface(infile):
+	fichier = open(infile,"r")
+		
 
 #Test
 
