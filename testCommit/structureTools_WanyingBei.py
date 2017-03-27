@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import math
 
+
+
 def dico(lines):
 	dico_prot = dict()
 
@@ -42,14 +44,13 @@ def calculdist(dico1,dico2):
 	residu2=dico2.keys()
 	for keys1 in dico1[residu1[0]]["atomlist"]:
 		for keys2 in dico2[residu2[0]]["atomlist"]:
-			dist.append( math.sqrt((float(dico2[residu2[0]][keys2]["x"])-float(dico1[residu1[0]][keys1]["x"]))**2+(float(dico2[residu2[0]][keys2]["y"])-float(dico1[residu1[0]][keys1]["y"]))**2+(float(dico2[residu2[0]][keys2]["z"])-float(dico1[residu1[0]][keys1]["z"]))**2))
+			dist.append(math.sqrt((float(dico2[residu2[0]][keys2]["x"])-float(dico1[residu1[0]][keys1]["x"]))**2+(float(dico2[residu2[0]][keys2]["y"])-float(dico1[residu1[0]][keys1]["y"]))**2+(float(dico2[residu2[0]][keys2]["z"])-float(dico1[residu1[0]][keys1]["z"]))**2))
 	return min(dist)	
 	
 	
 
 def CDM(dico1,dico2):
 	cpt=0
-	
 	x1=0
 	y1=0
 	z1=0
@@ -62,8 +63,7 @@ def CDM(dico1,dico2):
 		cpt=cpt+1
 	x1=x1/cpt
 	y1=y1/cpt
-	z1=z1/cpt
-	
+	z1=z1/cpt	
 	cpt=0
 	x2=0
 	y2=0
@@ -83,21 +83,19 @@ def CDM(dico1,dico2):
 	
 
 
-if __name__ = "main":
-	
-	
-	
-	import matplotlib
-
+if __name__ == '__main__':
+	import matplotlib.pyplot as plt
+	import numpy as np
 
 	from optparse import OptionParser
-
 	parser = OptionParser()
-	parser.add_option("-f", dest="f",help ="Veuillez rentrer le nom du fichier pdb")
-	parser.add_option("-d", dest="d",help ="DistanceCourte / CentreDeMasse?")
+	parser.add_option("-f", dest="f",help ="Veuillez fournir le chemin vers votre fichier pdb")
+	parser.add_option("-d", dest="d",help ="DistanceCourte / CentreDeMasse ?")
+	parser.print_help()
 	(options, args)=parser.parse_args()
 	f = options.f
 	d = options.d
+	
 
 	filin=open (f,"r")
 	lines=filin.readlines()
@@ -106,31 +104,31 @@ if __name__ = "main":
 #	creer dictionnaire a partir du fichier pdb
 ######################################################
 
-	dico={}
-	dico=Dico.dico(lines)
+	dic={}
+	dic=dico(lines)
 
 ######################################################
 #	matrice de distance
 ######################################################
 
 	residulist=[]
-	for chain in dico:
-		for i in dico[chain]["reslist"]:
-			residulist.append(dico[chain][i].keys())
-		
-	dist=[]
-	distlist=[]
-	for chain in dico:
-		for i in dico[chain]["reslist"]:
-			for j in dico[chain]["reslist"]:
+	for chain in dic:
+		for i in dic[chain]["reslist"]:
+			residulist.append(dic[chain][i].keys())
+			
+	matrix=[]
+	matrix=np.zeros((len(residulist),len(residulist)))
+
+	for chain in dic:
+		for i in range(len(dic[chain]["reslist"])):
+			for j in range(len(dic[chain]["reslist"])):
 				if d=="DistanceCourte":
-					dist.append(DistCourte.calculdist(dico[chain][i],dico[chain][j]))
-					if len(dist)==len(residulist):
-						distlist.append(dist)
-						dist=[]
+					matrix[i,j]=calculdist(dic[chain][dic[chain]["reslist"][i]],dic[chain][dic[chain]["reslist"][j]])
+
 				elif d=="CentreDeMasse":
-					dist.append(CDM.CDM(dico[chain][i],dico[chain][j]))
-					if len(dist)==len(residulist):
-						distlist.append(dist)
-						dist=[]
+					matrix[i,j]=CDM(dic[chain][dic[chain]["reslist"][i]],dic[chain][dic[chain]["reslist"][j]])
+	
+	plt.pcolor(matrix, cmap='gist_rainbow')
+	plt.colorbar()
+	plt.show()
 
