@@ -3,6 +3,10 @@
 import sys
 import math
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 ## Retourne le dictionnaire atome-masse moleculaire
 # @a : chemin du fichier de donnees atome-masse moleculaire
 def lireAtoms(a):
@@ -97,31 +101,31 @@ def distance(a):
 	for i in a.keys(): #Chaines i
 		for j in a[i].keys(): # Resisud	j
 			
-			if str(i+j) not in mat.keys():
-				mat[str(i+j)]={}
+			if str(j) not in mat.keys():
+				mat[str(j)]={}
 			
 			#~ for k in a.keys(): # Chaine k
-			for l in a[k].keys(): #residu l
+			for l in a[i].keys(): #residu l
 			
-				if str(i+j)!=str(k+l):
-					if str(k+l) not in mat.keys() or str(i+j) not in mat[str(k+l)].keys():
+				if j!=l:
+					if str(l) not in mat.keys() or str(j) not in mat[str(l)].keys():
 						x1 = a[i][j]['cdm']['x']
 						y1 = a[i][j]['cdm']['y']
 						z1 = a[i][j]['cdm']['z']
 						
-						x2 = a[k][l]['cdm']['x']
-						y2 = a[k][l]['cdm']['y']
-						z2 = a[k][l]['cdm']['z']
+						x2 = a[i][l]['cdm']['x']
+						y2 = a[i][l]['cdm']['y']
+						z2 = a[i][l]['cdm']['z']
 						
 						distance= math.sqrt(pow(x1-x2,2)+pow(y1-y2,2)+pow(z1-z2,2))
-						mat[str(i+j)][str(k+l)]={'val':distance}
-										
+						mat[str(j)][str(l)]={'val':distance}
+							
 	return mat
 
 
-## Test si deux residus sont en interaction
-def interaction(a,mat):
-	print 'a';
+#~ ## Test si deux residus sont en interaction
+#~ def draw(mat):
+	#~ x,y = np.grid[]
 	
 
 ## Affiche proprement les distances residu-redisu
@@ -129,16 +133,37 @@ def interaction(a,mat):
 def printDistance(a):
 	for i in a.keys():
 		for j in a[i].keys():
-			print i+" & "+j+" = "+str(a[i][j]['val'])
+			print("["+i+"]["+j+"] = "+str(a[i][j]['val']))
 
+def repeat(a,b):
+	mot = str()
+	for i in range(0,b):
+		mot+=str(a)
+	return mot
 
+def formateMot(a,i):
+	nbEspace=i-len(a)
+	mot=str()
+	if(nbEspace>=0):
+		mot = str(a)+repeat(" ",nbEspace)
+	
+	return mot 
+		
+
+def createPDB(a):
+	with open("PDBout.PDB", "w") as fout:
+		for i in a.keys():
+			for j in a[i].keys():
+				print("a")
+				#print("ATOM     "+str(i)+str(a[i][j]['ID']))
 
 
 if __name__ == '__main__':
 	monDico = dict()
 	monDico = lirePDB(sys.argv[1],sys.argv[2])
 	
-	ajouterCentreDeMasse(monDico);
+	ajouterCentreDeMasse(monDico)
 	
 	mat = distance(monDico)
 	printDistance(mat)
+	print(formateMot("ATOM", 6))
