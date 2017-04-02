@@ -1,0 +1,10 @@
+Bonjour,
+
+pour vous filer un coup de main car l’implémentation des paramètres du champs de force décrit dans Cornell et al. n’est pas si simple, je vous envoie un module structureToolsProjPython dans lequel :
+- les paramètres sont implémentés (voir fonctions epsilon_vdw_PDB() et chargePDB())
+- les paramètres sont assignés au PDB (contenant le Rec ET le Lig - attention, les deux protéines sont mises dans le même fichier pour plus de simplicité) via la fonction assignParams()
+- la fonction preparePDB() pilote l’ensemble, i.e. à partir du fichier d’entrée contenant les deux protéines (Rec ET Lig), la fonction parse le PDB et met le tout dans un dico dPDB puis assigne les params tels qu’ils sont décrits dans les deux fonctions epsilon_vdw_PDB() et chargePDB() et gère les cas particuliers des Histidines, Nter et Cter.
+
+Enfin, j’ai modifié légèrement la formule de l’énergie telle qu’elle est dans le Cornell et al. (1995) pour améliorer les résultats dans le contexte du docking - ça ne change pas grand chose, la constante epsilon est remplacée par une constante f et un facteur 20 et le potentiel de LJ pour le Aij passe en puissance de 8 au lieu de 12 - cela permet de tolérer de petits clashs inhérents au docking rigide). Voir la formule dans le png NouvelleFormuleDocking.png. 
+
+Je vous mets aussi les coords 3D Xray (avec les hydrogènes) du ligand et du rec correspondant à la bonne conformation du complexe. Cela vous sera utile pour le calcul de RMSD et évaluation des résultats (Lig_natif_DP.pdb et Rec_natif_DP.pdb).
