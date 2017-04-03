@@ -8,7 +8,10 @@ Description:
 - A function parsing a PDB file into a dictionary
 """
 from math import sqrt
+<<<<<<< HEAD
+=======
 import numpy
+>>>>>>> b87629ffacaf11cc6ef5810065b047b0ec3959a7
 
 def ParsingPDB (pdbFile):
 #fonction qui parse un fichier pdb
@@ -98,6 +101,30 @@ def centre_masse(x1,y1,z1,x2,y2,z2,x_centre,y_centre,z_centre):
     moyenne=(d1+d2)/2
     return(moyenne)
 
+<<<<<<< HEAD
+def Distance(x1,y1,z1,x2,y2,z2):#Calcule la distance entre deux points
+    return(sqrt((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
+
+
+def Ecrituretxt():#ecriture dans fichier txt
+    fichier_txt=open("fichier.txt","w")
+    
+    liste_residus
+    nbr_residus
+    residus_polaires
+    residus_hydrophobes
+    
+    fichier_txt.write(liste_residus)
+    fichier_txt.write(nbr_resiuds)
+    fichier_txt.write(residus_polaires)
+    fichier_txt.write(residus_hydrophobes)
+    fichier_txt.close()
+
+def EcritureDansPdb():#ecriture dans le fichier pdb dans lequel les residus de linterface sont etiquetes
+    fichier_pdb=open("fichier.pdb","w")
+     fichier_pdb.close()
+
+=======
 def Distance(x1,y1,z1,x2,y2,z2):
     #Calcule la distance entre deux points
     return(sqrt((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
@@ -154,6 +181,7 @@ def EcritureDansPdb():
     fichier_pdb=open("fichier.pdb","w")
     fichier_pdb.close()
     return(fichier_pdb)
+>>>>>>> b87629ffacaf11cc6ef5810065b047b0ec3959a7
 
 
 if __name__ == '__main__':
