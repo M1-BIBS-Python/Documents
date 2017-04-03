@@ -8,13 +8,17 @@ Description:
 - A function parsing a PDB file into a dictionary
 """
 from math import sqrt
+<<<<<<< HEAD
+=======
+import numpy
+>>>>>>> b87629ffacaf11cc6ef5810065b047b0ec3959a7
 
 def ParsingPDB (pdbFile):
-
+#fonction qui parse un fichier pdb
     print("Ce programme vous permet de transformer un fichier .pdb au format ATOM en un dictionnaire manipulable par Python.")
 
     infile = open(pdbFile, "r")
-    lines = infile.readlines() 						# cree une liste dont chaque element est une ligne du fichier
+    lines = infile.readlines() 	# cree une liste dont chaque element est une ligne du fichier
 
     molecule = {}									# dictionnaire le plus externe
     chainList = []
@@ -97,6 +101,7 @@ def centre_masse(x1,y1,z1,x2,y2,z2,x_centre,y_centre,z_centre):
     moyenne=(d1+d2)/2
     return(moyenne)
 
+<<<<<<< HEAD
 def Distance(x1,y1,z1,x2,y2,z2):#Calcule la distance entre deux points
     return(sqrt((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
 
@@ -119,6 +124,64 @@ def EcritureDansPdb():#ecriture dans le fichier pdb dans lequel les residus de l
     fichier_pdb=open("fichier.pdb","w")
      fichier_pdb.close()
 
+=======
+def Distance(x1,y1,z1,x2,y2,z2):
+    #Calcule la distance entre deux points
+    return(sqrt((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
+
+
+
+
+
+
+def contact(Dico1):
+    #determination de la zone de contact entre 2 résidus
+   
+   nbresidus=len(dico1["reslist"])#On recupere le nbr de residus du fichier
+   matrice2_2 = numpy.zeros((nbresidus,nbresidus))
+   
+   for i in nbresidus:
+       coori=dico1["reslist"][i]
+       j=i+1 #pour ne pas comparer le meme residus 
+       
+       #On selectionne les paires de residus et on calcule leur distance
+       
+       corrj=dico1["reslist"][j]
+       dij=distance_res(coori,coorj,mode) #calcul de la distance entre les residus
+       matrice2_2[i,j],matrice2_2[i,j]=dij,dij
+    return (matrice2_2)
+   
+def getRes(contactlist,PDB):
+#Fonction qui selectionne les residus qui sont dans la zone de contact
+    res=[]
+    for pair in contactlist:
+        res.append([dPDB["reslist"][pair[0]], dPDB["reslist"][pair[1]]])        
+    return(res)
+
+def Ecrituretxt():
+#ecriture dans fichier txt
+    fichier_txt=open("fichier.txt","w")
+    
+    liste_residus=contact()#Extraction des residus de contact
+    
+    nbr_residus=0 #On les compte
+    for i in liste_residus:
+        nbr_residus=i++
+    
+    #On determine leur charge ?
+    residus_polaires
+    residus_hydrophobes
+    
+    fichier_txt.write(liste_residus+" "+nbr_resiuds+" "+residus_polaires+" "+residus_hydrophobes)
+    fichier_txt.close()
+    return(fichier_txt)
+
+def EcritureDansPdb():
+    #ecriture dans le fichier pdb dans lequel les residus de linterface sont etiquetes
+    fichier_pdb=open("fichier.pdb","w")
+    fichier_pdb.close()
+    return(fichier_pdb)
+>>>>>>> b87629ffacaf11cc6ef5810065b047b0ec3959a7
 
 
 if __name__ == '__main__':

@@ -47,25 +47,24 @@ def ParsingPDB (pdbFile):
 					resList.append(curres)
 					molecule[chaine][curres] = {}
 					atomList=[]
-					rList=[]
+					molecule[chaine][curres]['resname'] = line[17:20].strip()
 				
 				atom = line[13:16].strip()
 				if atom not in atomList:
 					atomList.append(atom)
 					molecule[chaine][curres][atom] = {}
 				
-				if line[17:20] not in rList:
-					rList.append(line[17:20].strip())
 				
+				
+				molecule[chaine]['reslist'] = resList
+				molecule[chaine][curres]['atomlist'] = atomList
 					
 				molecule[chaine][curres][atom]['x'] = float(line[30:38])
 				molecule[chaine][curres][atom]['y'] = float(line[38:46])
 				molecule[chaine][curres][atom]['z'] = float(line[46:54])
 				molecule[chaine][curres][atom]['id'] = line[6:11].strip()
 			
-				molecule[chaine][curres]['resname'] = rList
-				molecule[chaine]['reslist'] = resList
-				molecule[chaine][curres]['atomlist'] = atomList
+				
 			
 	infile.close()
 	return(molecule)
@@ -106,7 +105,7 @@ def CentreGravite(dico):
 	nbAtomes = 0
 	CG_res = {}
 	for atom in dico.keys():
-		if atom != 'resname' and atom != 'atomlist':
+		if atom != 'resname' and atom != 'atomlist' and atom != 'temp':
 			x += dico[atom]['x']
 			y += dico[atom]['y']
 			z += dico[atom]['z']
@@ -145,18 +144,110 @@ def MatriceDistances(dico):
 		heatmap = plt.pcolor(data, cmap="RdBu_r")
 		
 		
-		#plt.show() # montre la heatmap dans une fenetre
-		plt.savefig("/home/tp-home007/sliegeo/Documents/Python/heatmap.png")
+		plt.show() # montre la heatmap dans une fenetre
+		#plt.savefig("/home/tp-home007/sliegeo/Documents/Python/heatmap.png")
 		return enContact
+
+
+# extrait les residus de l'interface d'un complexe proteique
+def InterfaceComplexe(dico, seuil):
+	# calcul des centres de gravite de chaque residu du complexe
+	for chain in dico.keys():
+		for res in dico[chain].keys():
+			if res != 'reslist':
+				dico[chain][res]['centre'] = CentreGravite(dico[chain][res])
+	
+	# calcul de la distance entre les residus de la chaine 1 et ceux de la chaine 2
+	distance = {}
+	nbCharges = 0
+	nbPolaires = 0
+	nbHydrophobes = 0
+	nbContactC = 0
+	nbContactP = 0
+	nbContactHH = 0
+	for chain1 in dico.keys():
+		for chain2 in dico.keys():
+			if chain1 != chain2:
+				for res1 in dico[chain1].keys():
+					for res2 in dico[chain2].keys():
+						if (res1 != 'reslist' and res2 != 'reslist'):
+							d = Distance(dico[chain1][res1]['centre'], dico[chain2][res2]['centre'])
+							
+							if d <= seuil:
+								dico[chain1][res1]['temp'] = 1
+								dico[chain2][res2]['temp'] = 1
+								distance[(chain1, res1), (chain2, res2)] = d
+								if ChargeResidu(res1):
+									nbCharges += 1
+								if ChargeResidu(res2):
+									nbCharges += 1
+								if (ChargeResidu(res1) and ChargeResidu(res2)):
+									nbContactC += 1
+									
+								if PolariteResidu(res1):
+									nbPolaires += 1
+								if PolariteResidu(res2):
+									nbPolaires += 1
+								if (PolariteResidu(res1) and PolariteResidu(res2)):
+									nbContactP += 1
+								
+								if HydrophobiciteResidu(res1):
+									nbHydrophobes += 1
+								if HydrophobiciteResidu(res2):
+									nbHydrophobes += 1
+								if ((HydrophobiciteResidu(res1) and not(HydrophobiciteResidu(res2))) or (not(HydrophobiciteResidu(res1)) and HydrophobiciteResidu(res2))):
+									nbContactHH += 1
+								
+							else:
+								dico[chain1][res1]['temp'] = 0
+								dico[chain2][res2]['temp'] = 0
+	return dico
+
+						
+"""
+	print "Nombre residus charges : " + str(nbCharges)
+	print "Nombre residus polaires : " + str(nbPolaires)
+	print "Nombre residus hydrophobes : " + str(nbHydrophobes)
+	print "Nombre de contacts polaire-polaire : " + str(nbContactP)
+	print "Nombre de contacts charge-charge : " + str(nbContactC)
+	print "Nombre de contacts hydrophobe-hydrophile : " + str(nbContactHH)		
+	"""	
+	
+def ChargeResidu(res):
+	resCharges = ["GLU", "HIS", "LYS", "ASP", "ARG"]
+	if res.upper() in resCharges:
+		return True
+	else:
+		return False
 		
+def PolariteResidu(res):
+	resPolaires = ["ASP", "GLU", "HIS", "LYS", "ASN", "GLN", "ARG", "SER", "TYR"]
+	if res.upper() in resPolaires:
+		return True
+	else:
+		return False
+
+def HydrophobiciteResidu(res):
+	resHydrophobes = ["ALA", "PHE", "GLY", "ILE", "LEU", "MET", "PRO", "VAl"]
+	if res.upper() in resHydrophobes:
+		return True
+	else:
+		return False
+
+
 
 if __name__ == '__main__':
 	dico = ParsingPDB("/home/tp-home007/sliegeo/Documents/Python/2w18.pdb")
 	#print dico
+	"""for chain in dico.keys():
+		for res in dico[chain].keys():
+			if res != 'reslist':
+				for key in dico[chain][res].keys():
+					print key"""
 	#print "Centre de masse : " + str(CentreMasse(dico))
 	#print "Centre de gravite : "+ str(CentreGravite(dico))
-	print MatriceDistances(dico)
-
+	#print MatriceDistances(dico)
+	print InterfaceComplexe(dico,5)
 	
 			
 			
