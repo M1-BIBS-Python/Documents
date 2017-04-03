@@ -1,187 +1,103 @@
 #!/usr/bin/python
-#-*- coding : utf8 -*-
-# @author : alexandra.benamar@yahoo.fr
+# @author : Alexandra Benamar, Robin Droit
 # date: 06/03/2017
 
 import os                      # gestion de fichiers et de dossiers
-<<<<<<< HEAD
 import sys                     # gestion des erreurs et des arguments
-import math
-=======
-import sys 
-import math                    # gestion des erreurs et des arguments
->>>>>>> 6a431cf1af88cdea6341b571525db0f9aebcc73b
+import string
+
 
 def parser_pdb():
-
     """ Cette fonction a pour but de parser un fichier de type pdb afin
     d'en recuperer les informations sur les differents atomes qui composent
     les acides amines.
 
-    Usage : ./tp3.py <fichier.pdb> """
+    Input : fichier pdb a parser.
+    Output : dictionnaire contenant les informations sur le fichier.
 
-    # Le nom du fichier est passe en argument
+    Usage : ./parser.py <fichier.pdb>
+
+    """
+
+	# Le nom du fichier est passe en argument
     if len(sys.argv) != 2:
-        sys.exit("ERREUR : il faut exactement un argument.")
+		sys.exit("ERREUR : il faut exactement un argument.")
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 6a431cf1af88cdea6341b571525db0f9aebcc73b
     # Test d'ouverture du fichier
     try:
-        f = open(sys.argv[1],'r')
+		f = open(sys.argv[1],'r')
     except:
-        print "Erreur, le fichier n'a pas pu s'ouvrir"
-        sys.exit(1)
-
-    lignes  = f.readlines()
-    nombre_lignes=len(lignes)
+		print "Erreur, le fichier n'a pas pu s'ouvrir"
+		sys.exit(1)
+		
+    lines  = f.readlines()
+    number_of_lines=len(lines)
 
 
     # Test fichier vide
-    if nombre_lignes==0:
-        print "Erreur, le fichier est vide"
-        sys.exit(1)
+    if number_of_lines==0:
+		print "Erreur, le fichier est vide"
+		sys.exit(1)
 
     # Initialisation d'un dictionnaire
-    dict = {}
+    dicPDB = {}
 
-    # Test ATOM dans le fichier
-    compteur=0
+    for line in lines:
+		
+		if line[0:5] == "MODEL":
+			modelnumber = string.strip(line[10:14])
+			dicPDB[modelnumber] = {}
+			dicPDB[modelnumber]["listChains"] = []     # le dictionnaire a la cle "listChains" qui prend une liste
 
-    for i in range(nombre_lignes):
+												   # Pour toutes les lignes qui commencent par ATOM (celles qui ont des atomes)
+		elif line[0:4] == "ATOM":
+			chain = line[24:27]
+			
+												   # on ne selectionne que les lignes qui contiennent des ATOM
+			if not chain in dicPDB[modelnumber]["listChains"]:
+				dicPDB[modelnumber]["listChains"].append(chain)
+				dicPDB[modelnumber][chain] = {}                  # Creation d'une cle chain dans le dictionnaire
 
-        # Pour toutes les lignes qui commencent par ATOM (celles qui ont des atomes)
-        if (lignes[i][0:4] == "ATOM"):
+			dicPDB[modelnumber][chain]["reslist"] = []           # qui a une cle reslist prenant une liste comme valeur
+			number = "%s"%(line[22:26]).strip()     # numero du residu
 
-<<<<<<< HEAD
-			compteur+=1
+			if not number in dicPDB[modelnumber][chain]["reslist"]:
+				dicPDB[modelnumber][chain]["reslist"].append(number)
+				dicPDB[modelnumber][chain][number] = {}          # Creation d'un dictionnaire dans dPBD[chain]
+                                                    # pour la cle number ayant pour cle "resname"
+				dicPDB[modelnumber][chain][number]["resname"] = string.strip(line[17:20])
 
-			nom_aa=lignes[i][21:22]
-			if dict.has_key(nom_aa)==False:
-				dict[nom_aa] = {}
+			dicPDB[modelnumber][chain][number]["atomlist"] = []  # a pour cle atomlist et prend une liste
 
-        # On enregistre la position de l'atome
-			position=lignes[i][23:26]
-			if dict[nom_aa].has_key(position)==False:
-				dict[nom_aa][position] = {}
+			atomtype = string.strip(line[13:16])
 
-        # On enregistre le nom de l'atome
-			nom_atome=lignes[i][13:16]
-			if dict[nom_aa][position].has_key(nom_atome)==False:
-            # On cree un dictionnaire avec toutes les informations qui nous interessent sur l'atome
-				dict[nom_aa][position][nom_atome] = {}
+			dicPDB[modelnumber][chain][number]["atomlist"] += atomtype # ajout de l'atome a la liste
 
-				dict[nom_aa][position][nom_atome]['position'] = lignes[i][9:13]
-				dict[nom_aa][position][nom_atome]['x'] = lignes[i][31:38]
-				dict[nom_aa][position][nom_atome]['y'] = lignes[i][40:48]
-				dict[nom_aa][position][nom_atome]['z'] = lignes[i][48:56]
-=======
-            compteur+=1
+			dicPDB[modelnumber][chain][number][atomtype] = {}    # cree un dictionnaire dans dicPBD[chain][number]
+                                                       # pour la cle "atomtype"
 
-            nom_aa=lignes[i][21:22]
-            if dict.has_key(nom_aa)==False:
-                dict[nom_aa] = {}
+			dicPDB[modelnumber][chain][number][atomtype]["x"] = float(line[30:38])
+			dicPDB[modelnumber][chain][number][atomtype]["y"] = float(line[38:46])
+			dicPDB[modelnumber][chain][number][atomtype]["z"] = float(line[46:54])
+			dicPDB[modelnumber][chain][number][atomtype]["id"] = line[6:11].strip()
+			dicPDB[modelnumber][chain][number][atomtype]["lyst"] = [float(line[30:38]),float(line[38:46]),float(line[46:54]),line[6:11].strip()]
+			
+			
 
-                # On enregistre la position de l'atome
-            position=lignes[i][23:26]
-            if dict[nom_aa].has_key(position)==False:
-                dict[nom_aa][position] = {}
-
-                # On enregistre le nom de l'atome
-            nom_atome=lignes[i][13:16]
-            if dict[nom_aa][position].has_key(nom_atome)==False:
-                # On cree un dictionnaire avec toutes les informations qui nous interessent sur l'atome
-                dict[nom_aa][position][nom_atome] = {}
-
-                dict[nom_aa][position][nom_atome]['position'] = lignes[i][9:13]
-                dict[nom_aa][position][nom_atome]['x'] = lignes[i][31:38]
-                dict[nom_aa][position][nom_atome]['y'] = lignes[i][40:48]
-                dict[nom_aa][position][nom_atome]['z'] = lignes[i][48:56]
->>>>>>> 6a431cf1af88cdea6341b571525db0f9aebcc73b
-
-    # Test presence d'ATOM
-    if compteur==0:
-        print "Le fichier ne contient pas d'ATOM"
-        sys.exit(1)
+	# Test presence d'ATOM
+    if dicPDB==0:
+		print "Le fichier ne contient pas d'ATOM"
+		sys.exit(1)
 
     # Fermeture du fichier
     f.close()
 
-    print compteur,
-
     # Affichage
-<<<<<<< HEAD
-    #for i in dict.keys():
-        #print dict[i]
-=======
-    for i in dict.keys():
-        print dict[i]
->>>>>>> 6a431cf1af88cdea6341b571525db0f9aebcc73b
+    for i in dicPDB.keys() :
+		print dicPDB[i]
 
-    return dict
+    return dicPDB
 
 
-<<<<<<< HEAD
-parser_pdb()
-
-=======
->>>>>>> 6a431cf1af88cdea6341b571525db0f9aebcc73b
-
-
-
-
-
-
-
-
-
-
-
-#Cette fonction va nous servir a calculer la distance la plus courte entre les atomes de deux acides amines
-def Minimum_distance(dict):
-	#on prend en entree un dictionnaire 
-	#on souhaite un autre dictionnaire en sortie
-	
-	#distance = sqrt((x1-x2)^2 + (y1-y2)^2 + (z1-z2)^2)
-	
-	#on boucle sur les 
-	compteur = 0
-	print dict.keys()
-	for cle in dict.keys():
-		print cle
-		#ici on boucle sur le nom de l'acide amine
-		compteur = compteur + 1
-		for cle2 in dict[cle].keys():
-			print cle2
-			#maintenant on boucle sur la position, c'est l'acide amine que l'on compare aux autres
-			for cle3 in dict[cle].keys():
-				print cle3
-				
-				if cle2 != cle3:
-					#on test que nous ne comparions pas l'acide amine avec lui meme
-					for cle4 in dict[cle][cle3].keys():
-						print cle4
-						#on boucle sur les differents atomes des acides amines
-						
-						x1 = float(dict[cle][cle2][cle4]['x'])
-						x2 = float(dict[cle][cle3][cle4]['x'])
-						
-						y1 = float(dict[cle][cle2][cle4]['y'])
-						y2 = float(dict[cle][cle3][cle4]['y'])
-						
-						z1 = float(dict[cle][cle2][cle4]['z'])
-						z2 = float(dict[cle][cle3][cle4]['z'])
-						
-						distance = math.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)
-						print distance
-						#print compteur
-	return distance
-				
-
-
-dict = parser_pdb()
-
-Minimum_distance(dict)
-
+parser = parser_pdb()
+#print parser
