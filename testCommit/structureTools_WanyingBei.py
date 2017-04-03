@@ -147,40 +147,30 @@ if __name__ == '__main__':
                 if d=="DistanceCourte":
                     matrix[i,j]=calculdist(dic[chain][dic[chain]["reslist"][i]],dic[chain][dic[chain]["reslist"][j]])
                     if matrix[[i,j]]<=s: #stocker les residus de l'interface dans une liste
-                        if dic[chain]["reslist"][i] not in res:
+                        if dic[chain][dic[chain]["reslist"][i]].keys()not in res_interface:
                             res_interface.append(dic[chain][dic[chain]["reslist"][i]].keys()) 
+                            
                             res.append(dic[chain]["reslist"][i])
-                        elif dic[chain]["reslist"][j] not in res:
+                        elif dic[chain][dic[chain]["reslist"][j]].keys() not in res_interface:
                             res_interface.append(dic[chain][dic[chain]["reslist"][j]].keys())
                             res.append(dic[chain]["reslist"][j])
                          
-                        if dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]=="hydrophobe" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]!="hydrophobe": #on peut considerer que les residus non hydrophobes sont hydrophiles?
+                        if dpropriete["%s"%res_interface[-1]]=="hydrophobe" and dpropriete["%s"%res_interface[-1]]!="hydrophobe": #on peut considerer que les residus non hydrophobes sont hydrophiles?
                             hydrophobes_hydrophiles=hydrophobes_hydrophiles+1
-                        elif dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]!="hydrophobe" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]=="hydrophobe":
+                        elif dpropriete["%s"%res_interface[-1]]!="hydrophobe" and dpropriete["%s"%res_interface[-1]]=="hydrophobe":
                             hydrophobes_hydrophiles=hydrophobes_hydrophiles+1
-                        elif dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]=="polaire" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]=="polaire":
+                        elif dpropriete["%s"%res_interface[-1]]=="polaire" and dpropriete["%s"%res_interface[-1]]=="polaire":
                             polaires_polaires=polaires_polaires+1
-                        elif dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]=="charge" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]=="charge":
+                        elif dpropriete["%s"%res_interface[-1]]=="charge" and dpropriete["%s"%res_interface[-1]]=="charge":
                             charges_charges=charges_charges+1
 
                 elif d=="CentreDeMasse":
                     matrix[i,j]=CDM(dic[chain][dic[chain]["reslist"][i]],dic[chain][dic[chain]["reslist"][j]])
                     if matrix[[i,j]]<=s: #stocker les residus de l'interface dans une liste
-                        if dic[chain]["reslist"][i] not in res:
+                        if dic[chain][dic[chain]["reslist"][i]].keys()not in res_interface:
                             res_interface.append(dic[chain][dic[chain]["reslist"][i]].keys()) 
-                            res.append(dic[chain]["reslist"][i])
-                        elif dic[chain]["reslist"][j] not in res:
+                        elif dic[chain][dic[chain]["reslist"][j]].keys() not in res_interface:
                             res_interface.append(dic[chain][dic[chain]["reslist"][j]].keys())
-                            res.append(dic[chain]["reslist"][j])
-                            
-                        if dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]=="hydrophobe" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]!="hydrophobe": #on peut considerer que les residus non hydrophobes sont hydrophiles?
-                            hydrophobes_hydrophiles=hydrophobes_hydrophiles+1
-                        elif dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]!="hydrophobe" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]=="hydrophobe":
-                            hydrophobes_hydrophiles=hydrophobes_hydrophiles+1
-                        elif dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]=="polaire" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]=="polaire":
-                            polaires_polaires=polaires_polaires+1
-                        elif dpropriete["%s"%dic[chain][dic[chain]["reslist"][i]].keys()]=="charge" and dpropriete["%s"%dic[chain][dic[chain]["reslist"][j]].keys()]=="charge":
-                            charges_charges=charges_charges+1
     
     plt.pcolor(matrix, cmap='gist_rainbow')
     plt.colorbar()
@@ -196,4 +186,60 @@ if __name__ == '__main__':
     filout.write("\n"+"nombre de contact polaires-polaires:"+"%d"%polaires_polaires)
     filout.write("\n"+"nombre de contact charges-charges:"+"%d"%charges_charges)
     
+##################################################################################################
+#	partie I -- calcul RMSD (mettez les autres blocs en commentaire pour executer cette partie)
+##################################################################################################
+	rouge=open ("rouge.pdb","r")
+	bleu=open ("bleu.pdb","r")
+	lines_rouge=rouge.readlines()
+	lines_bleu=bleu.readlines()
+	somme=0
+	diff_coord=[]
+	dist_delta=[]
+	for i in range(len(lines_rouge)):
+		diff_coord=[float(lines_rouge[i][31:38])-float(lines_bleu[i][31:38]),float(lines_rouge[i][39:46])-float(lines_bleu[i][39:46]),float(lines_rouge[i][47:54])-float(lines_bleu[i][47:54])]
+		dist_delta.append(math.sqrt((diff_coord[0])**2+(diff_coord[1])**2+(diff_coord[2])**2))
+	for i in range(len(dist_delta)):
+		somme=somme+(dist_delta[i])**2
+
+	RMSD=math.sqrt(somme/len(dist_delta))
+	
+#################################################################################################
+#	partie II -- calcul RMSD (mettez les autres blocs en commentaire pour executer cette partie)
+##################################################################################################	
+	from optparse import OptionParser
+	parser = OptionParser()
+	parser.add_option("-r", dest="r",help ="Veuillez fournir le chemin vers votre fichier pdb")
+	parser.add_option("-b", dest="b",help ="Veuillez fournir le chemin vers votre fichier pdb")
+	parser.print_help()
+	(options, args)=parser.parse_args()
+	r = options.r
+	b = options.b
     
+	rouge=open (r,"r")
+	bleu=open (b,"r")
+	lines_rouge=rouge.readlines()
+	lines_bleu=bleu.readlines()
+	somme=0
+	cpt_atom=0
+	cpt_residu=1
+	diff_coord=[]
+	dist_delta=[]
+	
+	for i in range(len(lines_rouge)):
+		if "ATOM" in lines_rouge[i]:
+			cpt_atom=cpt_atom+1 
+			diff_coord=[float(lines_rouge[i][31:38])-float(lines_bleu[i][31:38]),float(lines_rouge[i][39:46])-float(lines_bleu[i][39:46]),float(lines_rouge[i][47:54])-float(lines_bleu[i][47:54])]
+			dist_delta.append(math.sqrt((diff_coord[0])**2+(diff_coord[1])**2+(diff_coord[2])**2))
+			if i!=0 and lines_rouge[i][22:26]!=lines_rouge[i-1][22:26]:
+				cpt_residu=cpt_residu+1
+	for j in range(len(dist_delta)):
+		somme=somme+(dist_delta[j])**2
+	RMSD=math.sqrt(somme/len(dist_delta))
+	print cpt_atom #nombre d'atomes
+	print RMSD #la valeur de RMSD
+	print cpt_residu #nombre de residus
+	
+#################################################################################################
+#	partie III -- calcul RMSD (mettez les autres blocs en commentaire pour executer cette partie)
+##################################################################################################	
