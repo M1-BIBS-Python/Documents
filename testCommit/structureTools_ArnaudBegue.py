@@ -31,22 +31,22 @@ def lire_pdb(fichier):
 			
 			#si la chaine n'est pas connue on l'a cree
 			
-			mychain=myline[20:23].strip() #nom de la chaine			
+			mychain=myline[21].strip() #nom de la chaine			
 			if( mychain not in chain.keys()): # si la chaine n'existe pas 			
 				chain[mychain]={}
 				
 			
-			myresidu=myline[24:31].strip() # le numero de residu
+			myresidu=myline[17:20].strip() # le numero de residu
 			if( myresidu not in chain[mychain].keys()): # si le residu n'existe pas 					  			
 				chain[mychain][myresidu] = {}
 			
 
 			nomatome=myline[13:16].strip() #nom de l'atome	
 			info={
-				"X":(float)(myline[32:39].strip()),
-				"Y":(float)(myline[40:47].strip()),
-				"Z":(float)(myline[48:55].strip()),
-				"id":myline[9:12].strip()
+				"X":(float)(myline[31:38].strip()),
+				"Y":(float)(myline[39:46].strip()),
+				"Z":(float)(myline[47:54].strip()),
+				"id":myline[7:11].strip()
 			}
 
 			chain[mychain][myresidu][nomatome] = info	
@@ -59,12 +59,11 @@ def lire_pdb(fichier):
 def affichage(chain):
 	## Affichage
 
-	affichage= str(chain).replace("},","},\n")
-	affichage= str(affichage).replace("},","},\n")		
-	affichage=str(affichage).replace("},","},\n")		
+	affiche= str(chain).replace("},","},\n")
+	affiche= str(affiche).replace("},","},\n")		
+	affiche=str(affiche).replace("},","},\n")		
 
-	print affichage	
-
+	print( affiche) 	
 
 def cbm(chain):
 
@@ -72,7 +71,6 @@ def cbm(chain):
 		for j in chain[i].keys():
 			cbm={'X':0 , 'Y':0, 'Z':0}
 			div=0
-			
 			for k in chain[i][j].keys():
 				
 				cbm['X']+=chain[i][j][k]['X']
@@ -86,43 +84,89 @@ def cbm(chain):
 			chain[i][j]["cbm"]=cbm
 			
 	return chain
-	
-def distance(chain):
-	distance=dict()
+
+def ecrire_PDB(fichier,chain):
+	fic=open(fichier, "w")
 	for i in chain.keys():
 		for j in chain [i].keys():
-			for k in chain [i].keys():
-				if(j != k and str(i+":"+k+"&"+j) not in distance) :
-					# correspond aux coordonnee du cbm d'un residu de la chaine	aux carres
-					x1=chain[i][j]['cbm']['X']
-					y1=chain[i][j]['cbm']['Y']
-					z1=chain[i][j]['cbm']['Z']
-					# correspond aux coordonnee du cbm d'un residu de la chaine	aux carres
-					x2=chain[i][k]['cbm']['X']
-					y2=chain[i][k]['cbm']['Y']
-					z2=chain[i][k]['cbm']['Z']
+			for k in chain [i][j].keys():
+				
+				
+				a=str("ATOM"+"\t"+i+"\t"+j+"\t"+k+"\t"+str(chain[i][j][k]["X"])+"\t"+str(chain[i][j][k]["Y"])+"\t"+str(chain[i][j][k]["Z"])+"\n")
+				print( a )
+				fic.write(a )
+	
+	fic.close()
+	
+def repeat(a,b):
+	mot = str()
+	for i in range(0,b):
+		mot+=str(a)
+	return mot
+	
+def formateMot(a,i):
+	nbEspace=i-len(a)
+	mot=str()
+	if(nbEspace>=0):
+		mot = str(a)+repeat(" ",nbEspace)
+	
+	return mot 	
+
+def RMSD_atom(a,b):
+	som=0
+	N=0
+	for i in a.keys():
+		for j in a[i].keys():
+			for k in a[i][j].keys():				
+				# realise la somme des distances 
+				som=som+pow(distance(a[i][j][k],b[i][j][k]),2)
+				# compte le nombre d'atome 
+				N=N+1
+	# calcul le RMSD
+	RMSD=math.sqrt(som/N)
+	print("Nombre d'atomes="+str(N))
+	return RMSD			
 					
-					dist=math.sqrt(pow((x1-x2),2)+pow((y1-y2),2)+pow((z1-z2),2))
-					distance[str(i+":"+j+"&"+k)]=dist
+def distance(a,b):
+	# correspond aux coordonnee de l'atome de la chaine 1 
+	x1=a['X']
+	y1=a['Y']
+	z1=a['Z']
+	# correspond aux coordonnee de l'atome de la chaine 2
+	x2=b['X']
+	y2=b['Y']
+	z2=b['Z']
+
+	dist=math.sqrt(pow((x1-x2),2)+pow((y1-y2),2)+pow((z1-z2),2))
+	return dist
 	
-	return distance
-	
+def RMSD_residu(a,b,atome):
+	som=0
+	N=0
+	for i in a.keys():
+		for j in a[i].keys():						
+			# realise la somme des distances 
+			som=som+pow(distance(a[i][j][atome],b[i][j][atome]),2)
+			# compte le nombre d'atome 
+			N=N+1
+
+	# calcul le RMSD
+	RMSD=math.sqrt(som/N)
+	print("Nombre de residus ="+str(N))
+	return RMSD	
 
 
-		
-		
-	
+
 #~ def graphe(chain):
-
-	
-
 
 	
 if __name__=='__main__':
 	a=lire_pdb(sys.argv[1])
+	b=lire_pdb(sys.argv[2])
+	a=cbm(a)
+	b=cbm(b)
+	c=RMSD_residu(a,b,"CA")
+	print(c)
 	
-	b=cbm(a)
 	
-	c=distance(b)
-	affichage(c)
 	

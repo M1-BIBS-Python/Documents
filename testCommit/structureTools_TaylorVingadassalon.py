@@ -50,9 +50,9 @@ def lirePDB(a,b):
 				chName=l[20:23].strip()
 				
 				info={'ID': (float)(l[9:12].strip()),
-						'x'	: (float)(l[32:39].strip()),
-						'y' : (float)(l[40:47].strip()),
-						'z' : (float)(l[48:55].strip()),
+						'x'	: (float)(l[31:38].strip()),
+						'y' : (float)(l[39:46].strip()),
+						'z' : (float)(l[47:54].strip()),
 						'atmW': atmWeight[l[77].strip()]
 					}
 				######## Fin recuperation ########
