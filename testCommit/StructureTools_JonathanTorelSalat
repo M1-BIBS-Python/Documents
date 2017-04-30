@@ -1,0 +1,113 @@
+import string
+import sys
+
+def parsePDBMultiConf(infile):
+	
+	try:
+		f=open(infile,"r")
+		lines=f.readlines()
+		f.close()
+	except:
+		print("Fichier mal charge. Verifiez que votre fichier existe et ressayer.")
+		sys.exit(0)
+
+	dddd_PDB={}
+	dddd_PDB["chains"]=[]
+
+	for line in lines:
+		if line[0:4]=='ATOM':
+			chain=line[21]
+			domain=line[72:74].strip()
+			if not chain in dddd_PDB["chains"]:
+				dddd_PDB["chains"].append(chain)
+				dddd_PDB["chain"]={}
+				dddd_PDB[chaine]["reslist"]=[]
+	
+			curres=line[22:23].strip()
+	
+			if not curres in dddd_PDB[chain]["reslist"]:
+				dddd_PDB[chain]["reslist"].append(curres)
+				dddd_PDB[chain][curres]={}
+				dddd_PDB[chain][curres]["resname"]=line[17:20].strip()
+				dddd_PDB[chain][curres]["atomlist"]=[]
+	
+			
+			atomtype=line[12:16].strip()
+			dddd_PDB[chain][curres]["atomlist"].append(atomtype)
+			dddd_PDB[chain][curres][atomtype]={}
+			
+			#Verification que les chaines de caracteres contiennent bien des float
+			dddd_PDB[chain][curres][atomtype]["x"]=float(line[30:38])
+			dddd_PDB[chain][curres][atomtype]["y"]=float(line[38:46])
+			dddd_PDB[chain][curres][atomtype]["z"]=float(line[46:54])
+			
+			dddd_PDB[chain][curres][atomtype]["id"]= line[6:11].strip
+			
+	print dddd_pdb
+		
+#test de fonctions
+
+def calculCDM(d_pdb) :
+	#etant absent jai pris celui de maxime
+	"""
+        Cette fonction permet de calculer le centre de masse de chaque residus de chaque configuration
+        
+        Paramètre(s) :
+            - infile : dictionnaire resultat du parser
+        
+        Valeur renvoyée :
+            - d_pdb : dictionnaire modife
+            
+    """
+	for confi in d_pdb.keys() :
+		for domaine in d_pdb[confi]["domaine"]:
+			for res in d_pdb[confi][domaine]["reslist"]:
+				mx=0
+				my=0
+				mz=0
+				mtot=0
+				for atome in d_pdb[confi][domaine][res]["atomlist"]:
+					#donne la ponderation de chaque atome
+					if atome[0] == "H" :                                   
+						masse=1
+					elif atome[0] == "C" :
+						masse=12
+					elif atome[0] =="O" :
+						masse=16
+					elif atome[0] == "N" :
+						masse=14
+					elif atome[0] == "S" :
+						masse=32
+					elif atome[0] == "P" :
+						masse=31
+					elif atome[0] == "Z" :
+						masse=65
+					#faire la somme pondere pour chaque coordonee
+					mx+=masse*d_pdb[confi][domaine][res][atome]["x"]     
+					my+=masse*d_pdb[confi][domaine][res][atome]["y"]
+					mz+=masse*d_pdb[confi][domaine][res][atome]["z"]
+					mtot+=masse
+				d_pdb[confi][domaine][res]["CDM"]=[mx/mtot,my/mtot,mz/mtot] #calcul des coordonnees du centre de masse
+	return d_pdb			
+	
+#RMSD
+#source : https://bioinfo-fr.net/comparaison-de-structures-le-rmsd
+   
+def RMSDconf(conf1,conf2):
+	#fonction permettant de calculer RMSD entre 2 conformations (conf1 étant la reference)
+	
+	numerateur=float
+	n=float
+	numerateur=0
+	n=0
+	
+	for resid1 in conf1[""].keys:
+		for resid2 in conf2[""].keys:
+			if (resid2==resid1):
+				for atom in conf2[""][resid2]["atomlist"]: #conf1 valeurs theoriques (ref) conf2 valeurs obs (ref - theo)**2
+					numerateur+=((conf1[""][resid2][atomtype["x"]-conf2[""][resid2][atomtype]["x"])**2)+((conf1[""][resid2][atomtype["y"]-conf2[""][resid2][atomtype]["y"])**2)+((conf1[""][resid2][atomtype["z"]-conf2[""][resid2][atomtype]["z"])**2)
+					n+=1
+	
+	rmsd=sqrt(numerateur/n)
+	return rmsd
+	
